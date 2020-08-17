@@ -14,14 +14,48 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background-color: #46abd3;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+/*
+.img-react{
+  width: 100%;
+}
+*/
+
+body{
+  margin: 0px;
+  background-image: url(https://media.bitdegree.org/storage/media/images/2018/10/The-Most-Essential-React-Interview-Questions.jpg);
+  color: white;
+}
+
+#div-info{
+  background-color: rgba(8, 8, 56, 0.5);
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 800px;
+  display: flex;
+  /*flex-direction: column;*/
+  padding-top:20px;
+  margin: auto;
+}
+/*Funciona com o rodapé no final da página mesmo dando zoom. Não mudar nada. fazer o favor.*/
+footer{
+  background-color: #46abd3;
+  height: 100px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+
 }
 
 .App-link {
