@@ -1,13 +1,81 @@
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0px;
+  color: white !important;
+  width: 100%;
+  height: 100%;
+}
+
+#img-fundo{
+  background-image: url(https://img.elo7.com.br/product/zoom/16B18A4/painel-espaco-g-frete-gratis-artigos-de-festa-infantil.jpg);
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-repeat: no-repeat;
+  background-size:100%; /*impede que a imagem distorça*/
+}
+
+#label1{
+  font-size: 32px;
+}
+
+.custom-h1{
+  color: white;
+  text-shadow: 2px 2px 2px black;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.App-header {
+  background: linear-gradient(to right, #910096, #fa2588);
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+
+#div-info1{
+  background-color: rgba(8, 8, 56, 0.5);
+  /*Centraliza a div e permite que os elementos fiquem no centro
+  align-items: center;
+  justify-content: center;
+  */
+  align-items: center;
+  justify-content: center;
+  height: 460px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  float: right;
+}
+
+#div-info2{
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  float: left;
+  display: flex;
+}
+/*Funciona com o rodapé no final da página mesmo dando zoom. Não mudar nada. fazer o favor.*/
+footer{
+  background: linear-gradient(to left, #910096, #fa2588);
+  height: 100px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+  clear: both;
+
 }
