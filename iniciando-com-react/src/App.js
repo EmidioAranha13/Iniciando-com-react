@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 //import Nav from './components/nav'
 //import logo from './logo.svg';
 
@@ -43,6 +43,7 @@ class App extends React.Component{
     nome: "",
     //data: "",
     erro: false,
+    erro_msg : "",
     array: ["Nome dos Repositórios"]
   }
 
@@ -80,12 +81,16 @@ class App extends React.Component{
     this.setState({erro : false, array : []})
     const name = this.state.nome
     if(!name){
+      this.setState({erro : true, erro_msg : "Entrada vazia. Por favor digite um nome de usuário!"})
       return []
     }
     try{
       const repos = await fetch("https://api.github.com/users/"+name+"/repos",{method: "GET"})
       .then(repos => repos.json())
       console.log(repos)
+      if(repos.message === "Not Found"){
+        this.setState({erro : true, erro_msg : "Usuário não encontrado!"})
+      }
       ///*
       let repoNames = []
 
@@ -102,6 +107,7 @@ class App extends React.Component{
   }
   //*/
 
+  //*/
   criaComboBox = () => { 
     const array = this.state.array
     const comboBoxOpcoes = array.map( opcao => <option>{opcao}</option>)
@@ -122,6 +128,16 @@ class App extends React.Component{
         </header>
         <div>
           <div id="div-info1">
+            {this.state.erro &&
+              (
+                <div className="alert alert-dismissible alert-danger">
+                  <button type="button" className="close" data-dismiss="alert">
+                    &times;
+                  </button>
+                  <strong>Ocorreu um erro.</strong> {this.state.erro_msg}
+                  </div>
+              ) 
+            }
             <div className="row">
               <div className="col-md-3"></div>
               <div className="col-md-6">
@@ -147,7 +163,7 @@ class App extends React.Component{
               <div className="col-md-3"></div>
               <div className="col-md-6"> 
               <br/>
-              <button type="submit" className="btn btn-success" onClick = {this.getGithubRepos}> Buscar</button>
+              <button type="submit" className="btn btn-success btn-lg btn-block" onClick = {this.getGithubRepos}> Buscar</button>
               </div>
               <div className="col-md-3"></div>
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import 'bootswatch/dist/cerulean/bootstrap.min.css'
+import 'bootswatch/dist/cerulean/bootstrap-costumizer.min.css'
 //import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
