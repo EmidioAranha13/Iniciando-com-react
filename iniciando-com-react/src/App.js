@@ -41,7 +41,9 @@ class App extends React.Component{
 
   state = {
     nome: "",
-    data: ""
+    //data: "",
+    erro: false,
+    array: ["Nome dos Repositórios"]
   }
 
   /*
@@ -61,6 +63,8 @@ class App extends React.Component{
   }
    */ 
 
+  
+
   insercao_dados = (evento) =>{
 
     const dados = evento.target.value
@@ -71,11 +75,38 @@ class App extends React.Component{
     })
   }
 
-  criaComboBox = () => {
-    const estados_BR = ["-","AM","AC","BA","CE","PA"]
-    const comboBoxOpcoes = estados_BR.map( opcao => <option>{opcao}</option>)
+  ///*
+  getGithubRepos = async () => {
+    this.setState({erro : false, array : []})
+    const name = this.state.nome
+    if(!name){
+      return []
+    }
+    try{
+      const repos = await fetch("https://api.github.com/users/"+name+"/repos",{method: "GET"})
+      .then(repos => repos.json())
+      console.log(repos)
+      ///*
+      let repoNames = []
+
+      for (let key in repos){
+        repoNames.push(repos[key].name)
+      }
+      this.setState({array: repoNames})
+      //*/
+    }catch(error){
+      this.setState({
+        error: true
+      })
+    }
+  }
+  //*/
+
+  criaComboBox = () => { 
+    const array = this.state.array
+    const comboBoxOpcoes = array.map( opcao => <option>{opcao}</option>)
     return (
-      <select>
+      <select className="form-control">
         {comboBoxOpcoes}
       </select>
     )
@@ -86,27 +117,42 @@ class App extends React.Component{
       <div id="img-fundo">
         <header className="App-header">
           <div>
-            <h1 className="custom-h1">Seja bem vindo ao SpaceStation!</h1>
+            <h1 className="custom-h1">Seja bem vindo!</h1>
           </div>
         </header>
-        <div id="div-info1">
-          <label id="label1" for="nome">Nome: </label>
-          <input id="nome" type="text" value={this.state.nome} name="nome" onChange={this.insercao_dados} />
-          <label id="label1" for="data">DdeN: </label>
-          <input id="data" type="date" value={this.state.data} name="data" onChange={this.insercao_dados} />
-          <br/>
-          {this.criaComboBox()}
-          <h1 className="custom-h1">Olá {this.state.nome} com data de nascimento em ({this.state.data}).</h1>
-        </div>
-        <div id="div-info2">
-          <p>
-            O que é o Lorem Ipsum? <br/>
-            O Lorem Ipsum é um texto modelo da indústria tipográfica e de impressão. O Lorem Ipsum tem vindo a ser o texto padrão usado por estas indústrias desde o ano de 1500, quando uma misturou os caracteres de um texto para criar um espécime de livro. Este texto não só sobreviveu 5 séculos, mas também o salto para a tipografia electrónica, mantendo-se essencialmente inalterada. Foi popularizada nos anos 60 com a disponibilização das folhas de Letraset, que continham passagens com Lorem Ipsum, e mais recentemente com os programas de publicação como o Aldus PageMaker que incluem versões do Lorem Ipsum.
-            <br/><br/>
-            Porque é que o usamos?<br/>
-            É um facto estabelecido de que um leitor é distraído pelo conteúdo legível de uma página quando analisa a sua mancha gráfica. Logo, o uso de Lorem Ipsum leva a uma distribuição mais ou menos normal de letras, ao contrário do uso de "Conteúdo aqui, conteúdo aqui", tornando-o texto legível. Muitas ferramentas de publicação electrónica e editores de páginas web usam actualmente o Lorem Ipsum como o modelo de texto usado por omissão, e uma pesquisa por "lorem ipsum" irá encontrar muitos websites ainda na sua infância. Várias versões têm evoluído ao longo dos anos, por vezes por acidente, por vezes propositadamente (como no caso do humor).
-            
-          </p>
+        <div>
+          <div id="div-info1">
+            <div className="row">
+              <div className="col-md-3"></div>
+              <div className="col-md-6">
+                <div className="form-group">
+                <label id="label1" htmlFor="nome">Username: </label>
+                <input id="nome" 
+                        type="text" 
+                        placeholder = "Ex: Sample13"
+                        value={this.state.nome} 
+                        name="nome" 
+                        onChange={this.insercao_dados}
+                        className="form-control" />
+                </div>
+              </div>
+              <div className="col-md-3"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3"></div>
+              <div className="col-md-6"> {this.criaComboBox()}</div>
+              <div className="col-md-3"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3"></div>
+              <div className="col-md-6"> 
+              <br/>
+              <button type="submit" className="btn btn-success" onClick = {this.getGithubRepos}> Buscar</button>
+              </div>
+              <div className="col-md-3"></div>
+            </div>
+            <br/>
+          </div>
         </div>
       <footer>
       </footer>

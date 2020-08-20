@@ -12,11 +12,17 @@ body {
 
 #img-fundo{
   background-image: url(https://img.elo7.com.br/product/zoom/16B18A4/painel-espaco-g-frete-gratis-artigos-de-festa-infantil.jpg);
-  width: 100%;
-  height: 100%;
-  position: fixed;
   background-repeat: no-repeat;
   background-size:100%; /*impede que a imagem distorça*/
+  overflow: hidden;
+  /*Permite que o background se ajuste a tela do computador*/
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-attachment: fixed; /* Ajusta a imagem permitindo que a mesma fique fixada no background sem 
+  causar uma fixação nos demais divs */
+  background-position: center;
 }
 
 #label1{
@@ -51,13 +57,14 @@ code {
   align-items: center;
   justify-content: center;
   */
+  height: 600px;
   align-items: center;
   justify-content: center;
-  height: 460px;
-  width: 50%;
+  /*
   display: flex;
   flex-direction: column;
-  float: right;
+  float: right;*/
+  padding: 20px;
 }
 
 #div-info2{
@@ -70,12 +77,10 @@ code {
 /*Funciona com o rodapé no final da página mesmo dando zoom. Não mudar nada. fazer o favor.*/
 footer{
   background: linear-gradient(to left, #910096, #fa2588);
-  height: 100px;
-  position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
+  height: 100px; /* Nada haver com posição e sim com o tamanho do footer */
   overflow: hidden;
-  clear: both;
-
+  /*clear: both;*/
 }
