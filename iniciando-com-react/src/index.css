@@ -26,12 +26,16 @@ body {
 }
 
 #label1{
-  font-size: 32px;
+  font-size: 25px;
 }
 
 .custom-h1{
   color: white;
   text-shadow: 2px 2px 2px black;
+}
+
+.radios{
+  margin-left: 5px;
 }
 
 code {

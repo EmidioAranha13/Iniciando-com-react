@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import {Octokit} from '@octokit/rest'
 //import Nav from './components/nav'
 //import logo from './logo.svg';
 
@@ -44,7 +45,7 @@ class App extends React.Component{
     //data: "",
     erro: false,
     erro_msg : "",
-    array: ["Nome dos Repositórios"]
+    arrayRepo: ["Nome do Repositório"]
   }
 
   /*
@@ -77,8 +78,8 @@ class App extends React.Component{
   }
 
   ///*
-  getGithubRepos = async () => {
-    this.setState({erro : false, array : []})
+  getGithubByName = async () => {
+    this.setState({erro : false, arrayRepo: []})
     const name = this.state.nome
     if(!name){
       this.setState({erro : true, erro_msg : "Entrada vazia. Por favor digite um nome de usuário!"})
@@ -97,7 +98,7 @@ class App extends React.Component{
       for (let key in repos){
         repoNames.push(repos[key].name)
       }
-      this.setState({array: repoNames})
+      this.setState({arrayRepo: repoNames})
       //*/
     }catch(error){
       this.setState({
@@ -106,10 +107,49 @@ class App extends React.Component{
     }
   }
   //*/
+  ///*
+   getGithubByToken = async () => {
+    this.setState({erro : false, arrayRepo: []})
+    const token = this.state.nome
+    const octokit = new Octokit({auth: token, })
+    if(!octokit){
+      return []
+    }
+    try{
+      const repos = await octokit.request("GET /user/repos")
+      //.then(repos => repos.json())
+      //console.log(repos)
+      if(repos['status']===200){
+        const repos_data = repos['data']
+        console.log(repos_data)
+        ///*
+        const repoNames = []
 
+        for (let key in repos_data){
+          repoNames.push(repos_data[key]['name'])
+        }
+        this.setState({arrayRepo: repoNames})
+      }else{
+        this.setState({erro : true, erro_msg : "Token não encontrado!"})
+      }
+      //*/
+    }catch(error){
+      this.setState({erro : true, erro_msg : "Acesso não autorizado ou token inexistente!"})
+    }
+  }
+
+  getRadio = () => {
+    if(document.getElementById('op1').checked){
+      this.getGithubByName()
+    }else if(document.getElementById('op2').checked){
+      this.getGithubByToken()
+    }else{
+      this.setState({erro : true, erro_msg:"Você deve selecionar seu método de busca!"})
+    }
+  }
   //*/
-  criaComboBox = () => { 
-    const array = this.state.array
+  criaComboBoxRepo = () => { 
+    const array = this.state.arrayRepo
     const comboBoxOpcoes = array.map( opcao => <option>{opcao}</option>)
     return (
       <select className="form-control">
@@ -139,33 +179,50 @@ class App extends React.Component{
               ) 
             }
             <div className="row">
-              <div className="col-md-3"></div>
-              <div className="col-md-6">
+              <div className="col-md-4"></div>
+              <div className="col-md-4">
                 <div className="form-group">
-                <label id="label1" htmlFor="nome">Username: </label>
-                <input id="nome" 
-                        type="text" 
-                        placeholder = "Ex: Sample13"
-                        value={this.state.nome} 
-                        name="nome" 
-                        onChange={this.insercao_dados}
-                        className="form-control" />
+                  <label id="label1" htmlFor="nome">Username ou Token: </label>
+                  <input id="nome" 
+                          type="text" 
+                          placeholder = "Ex: Sample13"
+                          value={this.state.nome} 
+                          name="nome" 
+                          onChange={this.insercao_dados}
+                          className="form-control" />
                 </div>
               </div>
-              <div className="col-md-3"></div>
+              <div className="col-md-4"></div>
             </div>
             <div className="row">
-              <div className="col-md-3"></div>
-              <div className="col-md-6"> {this.criaComboBox()}</div>
-              <div className="col-md-3"></div>
-            </div>
-            <div className="row">
-              <div className="col-md-3"></div>
-              <div className="col-md-6"> 
-              <br/>
-              <button type="submit" className="btn btn-success btn-lg btn-block" onClick = {this.getGithubRepos}> Buscar</button>
+              <div className="col-md-4"></div>
+              <div className="col-md-2">
+                <label htmlFor="op1">Buscar por Nome: </label>
+                <input type="radio" name="radioOptions" className="radios" id="op1" value="Usermame"/>
               </div>
-              <div className="col-md-3"></div>
+              <div className="col-md-2">
+                <label htmlFor="op2">Buscar por Token: </label>
+                <input type="radio" name="radioOptions" className="radios" id="op2" value="Token"/>
+              </div>
+              <div className="col-md-4"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-4"></div>
+              <div className="col-md-4">
+                <div className="form-group">
+                  <label id="label1" htmlFor="criarcombobox">Repositórios: </label>
+                  <div id="criarcombobox"> {this.criaComboBoxRepo()}</div>
+                </div>
+              </div>
+              <div className="col-md-4"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-4"></div>
+              <div className="col-md-4"> 
+              <br/>
+              <button type="submit" className="btn btn-success " onClick = {this.getRadio}> Buscar</button>
+              </div>
+              <div className="col-md-4"></div>
             </div>
             <br/>
           </div>
