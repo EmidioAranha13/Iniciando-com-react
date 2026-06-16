@@ -45,7 +45,8 @@ class App extends React.Component{
     //data: "",
     erro: false,
     erro_msg : "",
-    arrayRepo: ["Nome do Repositório"]
+    arrayRepo: [],
+    repoSelecionado: ""
   }
 
   /*
@@ -93,12 +94,16 @@ class App extends React.Component{
         this.setState({erro : true, erro_msg : "Usuário não encontrado!"})
       }
       ///*
-      let repoNames = []
+      // let repoNames = []
 
-      for (let key in repos){
-        repoNames.push(repos[key].name)
-      }
-      this.setState({arrayRepo: repoNames})
+      // for (let key in repos){
+      //   console.log(repos[key])
+      //   repoNames.push(repos[key].name)
+      // }
+      this.setState({
+        arrayRepo: repos,
+        repoSelecionado: repos.length > 0 ? repos[0] : null
+      })
       //*/
     }catch(error){
       this.setState({
@@ -123,12 +128,16 @@ class App extends React.Component{
         const repos_data = repos['data']
         console.log(repos_data)
         ///*
-        const repoNames = []
+        // const repoNames = []
 
-        for (let key in repos_data){
-          repoNames.push(repos_data[key]['name'])
-        }
-        this.setState({arrayRepo: repoNames})
+        // for (let key in repos_data){
+        //   repoNames.push(repos_data[key]['name'])
+        // }
+        // this.setState({arrayRepo: repoNames})
+        this.setState({
+          arrayRepo: repos,
+          repoSelecionado: repos.length > 0 ? repos[0] : null
+        })
       }else{
         this.setState({erro : true, erro_msg : "Token não encontrado!"})
       }
@@ -148,25 +157,42 @@ class App extends React.Component{
     }
   }
   //*/
-  criaComboBoxRepo = () => { 
-    const array = this.state.arrayRepo
-    const comboBoxOpcoes = array.map( opcao => <option>{opcao}</option>)
+  criaComboBoxRepo = () => {
+    const comboBoxOpcoes = this.state.arrayRepo.map(opcao =>
+      <option key={opcao.id} value={opcao.id}>
+        {opcao.name}
+      </option>
+    )
+
     return (
-      <select className="form-control">
+      <select
+        className="form-control"
+        value={this.state.repoSelecionado}
+        onChange={(event) => {
+          const repo = this.state.arrayRepo.find(
+            r => r.id === Number(event.target.value)
+          )
+
+          this.setState({
+            repoSelecionado: repo
+          })
+        }}
+      >
         {comboBoxOpcoes}
       </select>
     )
   }
+  
 
   render(){
     return(
       <div id="img-fundo">
-        <header className="App-header">
+        {/* <header className="App-header">
           <div>
             <h1 className="custom-h1">Seja bem vindo!</h1>
           </div>
-        </header>
-        <div>
+        </header> */}
+        <div className="container-p">
           <div id="div-info1">
             {this.state.erro &&
               (
@@ -178,24 +204,18 @@ class App extends React.Component{
                   </div>
               ) 
             }
-            <div className="row">
-              <div className="col-md-4"></div>
-              <div className="col-md-4">
-                <div className="form-group">
-                  <label id="label1" htmlFor="nome">Username ou Token: </label>
-                  <input id="nome" 
-                          type="text" 
-                          placeholder = "Ex: Sample13"
-                          value={this.state.nome} 
-                          name="nome" 
-                          onChange={this.insercao_dados}
-                          className="form-control" />
-                </div>
-              </div>
-              <div className="col-md-4"></div>
+            <p className="custom-h1">GitPro Collector</p>
+            <div className="form-group">
+              <label id="label1" htmlFor="nome">Username ou Token: </label>
+              <input id="nome" 
+                type="text" 
+                placeholder = "Ex: Sample13"
+                value={this.state.nome} 
+                name="nome" 
+                onChange={this.insercao_dados}
+                className="form-control" />
             </div>
             <div className="row">
-              <div className="col-md-4"></div>
               <div className="col-md-2">
                 <label htmlFor="op1">Buscar por Nome: </label>
                 <input type="radio" name="radioOptions" className="radios" id="op1" value="Usermame"/>
@@ -204,31 +224,39 @@ class App extends React.Component{
                 <label htmlFor="op2">Buscar por Token: </label>
                 <input type="radio" name="radioOptions" className="radios" id="op2" value="Token"/>
               </div>
-              <div className="col-md-4"></div>
             </div>
-            <div className="row">
-              <div className="col-md-4"></div>
-              <div className="col-md-4">
-                <div className="form-group">
-                  <label id="label1" htmlFor="criarcombobox">Repositórios: </label>
-                  <div id="criarcombobox"> {this.criaComboBoxRepo()}</div>
-                </div>
+            <div className="form-group">
+              <label id="label1" htmlFor="criarcombobox">Repositórios: </label>
+              <div id="criarcombobox"> {this.criaComboBoxRepo()}</div>
+            </div>
+            <button type="submit" className="btn btn-success " onClick = {this.getRadio}> Buscar</button>
+          </div>
+          <div id="div-info2">
+            {this.state.repoSelecionado && (
+              <div>
+                <h3>{this.state.repoSelecionado.name}</h3>
+
+                <p>
+                  {this.state.repoSelecionado.description || "Sem descrição"}
+                </p>
+
+                <p>
+                  Linguagem: {this.state.repoSelecionado.language || "Não informada"}
+                </p>
+
+                <a
+                  href={this.state.repoSelecionado.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ver no GitHub
+                </a>
               </div>
-              <div className="col-md-4"></div>
-            </div>
-            <div className="row">
-              <div className="col-md-4"></div>
-              <div className="col-md-4"> 
-              <br/>
-              <button type="submit" className="btn btn-success " onClick = {this.getRadio}> Buscar</button>
-              </div>
-              <div className="col-md-4"></div>
-            </div>
-            <br/>
+            )}
           </div>
         </div>
-      <footer>
-      </footer>
+      {/* <footer>
+      </footer> */}
     </div>
     )
   }
