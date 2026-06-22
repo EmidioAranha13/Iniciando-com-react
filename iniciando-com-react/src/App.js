@@ -44,6 +44,8 @@ class App extends React.Component{
     nome: "",
     searchFor: "Usermame",
     erro: false,
+    firstOpen: true,
+    mobileSectionOpen: true,
     erro_msg : "",
     arrayRepo: [],
     repoSelecionado: "", 
@@ -101,7 +103,11 @@ class App extends React.Component{
     this.setState({erro : false, arrayRepo: []})
     const name = this.state.nome
     if(!name){
-      this.setState({erro : true, erro_msg : "Entrada vazia. Por favor digite um nome de usuário!"})
+      this.setState({
+        erro : true, 
+        erro_msg : "Entrada vazia. Por favor digite um nome de usuário!",
+        searching: false
+      })
       return []
     }
     try{
@@ -121,12 +127,16 @@ class App extends React.Component{
       this.setState({
         arrayRepo: repos,
         repoSelecionado: repos.length > 0 ? repos[0] : null, 
-        searching: false
+        searching: false,
+        mobileSectionOpen: false
       })
-      this.getReadMe(
-        repos[0].owner.login,
-        repos[0].name
-      )
+
+      if(repos.length > 0) {
+        this.getReadMe(
+          repos[0].owner.login,
+          repos[0].name
+        )
+      }
       //*/
     }catch(error){
       this.setState({
@@ -137,46 +147,63 @@ class App extends React.Component{
   }
   //*/
   ///*
-   getGithubByToken = async () => {
-    this.setState({erro : false, arrayRepo: []})
-    const token = this.state.nome
-    const octokit = new Octokit({auth: token, })
-    if(!octokit){
-      return []
-    }
-    try{
-      const repos = await octokit.request("GET /user/repos")
-      //.then(repos => repos.json())
-      //console.log(repos)
-      if(repos['status']===200){
-        const repos_data = repos['data']
-        console.log(repos_data)
-        ///*
-        // const repoNames = []
+  getGithubByToken = async () => {
+    this.setState({
+      erro: false,
+      arrayRepo: [],
+      searching: true
+    })
 
-        // for (let key in repos_data){
-        //   repoNames.push(repos_data[key]['name'])
-        // }
-        // this.setState({arrayRepo: repoNames})
-        this.setState({
-          arrayRepo: repos_data,
-          repoSelecionado: repos_data.length > 0 ? repos_data[0] : null,
-          searching: false
-        })
+    const token = this.state.nome.trim()
+
+    if (!token) {
+      this.setState({
+        erro: true,
+        erro_msg: "Entrada vazia. Por favor digite um token!",
+        searching: false
+      })
+      return
+    }
+
+    try {
+      const octokit = new Octokit({ auth: token })
+
+      const repos = await octokit.request("GET /user/repos")
+
+      const repos_data = repos.data
+
+      this.setState({
+        arrayRepo: repos_data,
+        repoSelecionado: repos_data.length > 0 ? repos_data[0] : null,
+        searching: false,
+        mobileSectionOpen: false
+      })
+
+      if (repos_data.length > 0) {
         this.getReadMe(
           repos_data[0].owner.login,
           repos_data[0].name
         )
-      }else{
-        this.setState({erro : true, erro_msg : "Token não encontrado!", searching: false})
       }
-      //*/
-    }catch(error){
-      this.setState({erro : true, erro_msg : "Acesso não autorizado ou token inexistente!", searching: false})
+
+    } catch (error) {
+      console.error(error)
+
+      this.setState({
+        erro: true,
+        erro_msg: "Acesso não autorizado. Token inválido, expirado ou sem permissão.",
+        searching: false,
+        loadingReadMe: false,
+        arrayRepo: [],
+        repoSelecionado: null,
+        readme: "",
+        firstOpen: false
+      })
     }
   }
 
   getReadMe = async (owner, repo) => {
+    if (!owner || !repo) return 0;
     this.setState({ loadingReadMe: true })
     try {
       const response = await fetch(
@@ -204,14 +231,27 @@ class App extends React.Component{
     }
   }
 
-  getRadio = () => {
-    this.setState({searching: true, repoSelecionado: null, readme: "", loadingReadMe: false})
+  getRadio = async () => {
+    this.setState({
+      searching: true,
+      repoSelecionado: null,
+      readme: "",
+      loadingReadMe: false,
+      firstOpen: false,
+      erro: false,
+      erro_msg: ""
+    })
+
     if(this.state.searchFor === "Usermame"){
-      this.getGithubByName()
-    }else if(this.state.searchFor === "Token"){
-      this.getGithubByToken()
-    }else{
-      this.setState({erro : true, erro_msg:"Você deve selecionar seu método de busca!"})
+      await this.getGithubByName()
+    } else if(this.state.searchFor === "Token"){
+      await this.getGithubByToken()
+    } else {
+      this.setState({
+        erro: true,
+        erro_msg:"Você deve selecionar seu método de busca!",
+        searching: false
+      })
     }
   }
   //*/
@@ -286,34 +326,48 @@ class App extends React.Component{
                   </div>
               ) 
             }
-            <div id="div-info1">
-              <p className="custom-h1">GitPro Collector</p>
-              <p className="description-p">Busque por repositórios no GitHub através de usuários ou Tokens pessoais fornecidos</p>
-              <div className="form-group custom-form-1">
-                <label id="label1" htmlFor="nome">Username ou Token: </label>
-                <input id="nome" 
-                  type="text" 
-                  placeholder = "Ex: Sample13"
-                  value={this.state.nome} 
-                  name="nome" 
-                  onChange={this.insercao_dados}
-                  className="form-control" />
+            <div id="div-info1" className={this.state.mobileSectionOpen ? '' : 'section-close'}>
+              <div className="section-header">
+                <p className="custom-h1">GitPro Collector</p>
+                <p className="description-p">Busque por repositórios no GitHub através de usuários ou Tokens pessoais fornecidos</p>
               </div>
-              <div className="row radio-group">
-                <label htmlFor="op0" style={{fontWeight: 'bold', width: '6em', margin: '0'}}>Boscar por: </label>
-                {this.criaComboRadio()}
+              <div className="section-form">
+                <div className="form-group custom-form-1">
+                  <label id="label1" htmlFor="nome">Username ou Token: </label>
+                  <input id="nome" 
+                    type="text" 
+                    placeholder = "Ex: Sample13"
+                    value={this.state.nome} 
+                    name="nome" 
+                    onChange={this.insercao_dados}
+                    className="form-control" />
+                </div>
+                <div className="row radio-group">
+                  <label htmlFor="op0" style={{fontWeight: 'bold', width: '6em', margin: '0'}}>Buscar por: </label>
+                  {this.criaComboRadio()}
+                </div>
+                <button type="submit" className="btn btn-secondary btn-custom" onClick = {this.getRadio} disabled={this.state.searching}>
+                  {this.state.searching ? 'Buscando...' : 'Buscar'}
+                </button>
               </div>
-              <button type="submit" className="btn btn-secondary btn-custom" onClick = {this.getRadio} disabled={this.state.searching}>
-                {this.state.searching ? 'Buscando...' : 'Buscar'}
-              </button>
             </div>
-            <div id="div-info2">
+            <div className='arrow-button' onClick={() => this.setState({mobileSectionOpen: !this.state.mobileSectionOpen})}>
+              <img src='double-arrow.png' className={`double-arrow ${this.state.mobileSectionOpen ? 'open' : 'closed'}`} alt="seta de expansão"/>
+            </div>
+            <div id="div-info2" className='content-section-open'>
               {this.state.searching || this.state.loadingReadMe ? (
                 <div className="searching-content">
                   <img src={'/load-icon.png'} alt="Carregando" className="load-icon" />
                   <p>Carregando...</p>
                 </div>
               ) : (
+                this.state.firstOpen ? (
+                  <div className="welcome-content">
+                    <img src={'/planeta.ico'} alt="Bem Vindo" className="welcome-img" />
+                    <h1>Bem Vindo ao GitPro Collector!</h1>
+                    <p>Para começar ⭢ insira um nome de usuário ou token do GitHub ⭢ clique em "Buscar".</p>
+                  </div>
+                ) : 
                 this.state.repoSelecionado ? (
                 <div className={"content-data-repo"}>
                   <div className="row-combo-box">
@@ -349,6 +403,7 @@ class App extends React.Component{
                   <pre className="readme-box">
                     {this.state.readme}
                   </pre>
+                  <div className='end-separator'></div>
                 </div>
                 ) : (
                   <div className="content-repo-nf">

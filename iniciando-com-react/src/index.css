@@ -150,6 +150,21 @@ code {
   width: clamp(500px, 40vw, 40vw);
   padding: 20px;
   background: linear-gradient(to right, #910096, #fa2588);
+  box-sizing: border-box;
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .section-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
 
   .description-p{
     font-size: 1em;
@@ -158,6 +173,30 @@ code {
     margin-top: 0px;
     width: clamp(360px, 18vw, 18vw);
     text-shadow: 2px 2px 2px black;
+  } 
+}
+
+.arrow-button {
+  width: 100%;
+  background: linear-gradient(to right, #910096, #fa2588);
+  position: relative;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  .double-arrow {
+    width: 4em;
+    height: 4em;
+    padding: 0.5em;
+    transition: transform 0.4s ease;
+    &.open {
+      transform: rotate(-90deg);
+    }
+    &.closed {
+      transform: rotate(90deg);
+    }
+  }
+  &:active {
+    background: rgba(8, 8, 56, 1);
   }
 }
 
@@ -169,6 +208,18 @@ code {
   width: 60%;
   padding: 20px;
   overflow: auto;
+
+  .welcome-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 3px 3px 1px black;
+    
+    h1 {
+      font-size: clamp(1.6em, 3.5vw, 3.5vw);
+    }
+  }
 
   .content-repo-nf {
     display: flex;
@@ -252,25 +303,32 @@ code {
       }
     }
     .readme-box {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
 
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
 
-  padding: 1em;
-  margin: 0 0 4em 0;
+      padding: 1em;
+      margin: 0 0 1em 0;
 
-  border-radius: 8px;
-  color: white;
-  background-color: #2c2c2c;
+      border-radius: 8px;
+      color: white;
+      background-color: #2c2c2c;
 
-  overflow: visible;
-  height: auto;
-  max-height: none;
-}
+      overflow: visible;
+      height: auto;
+      max-height: none;
+    }
+
+    .end-separator {
+      width: 100%;
+      border: none;
+      border-top: 3px solid transparent;
+      padding-bottom: 1em;
+    }
   }
 }
 
@@ -326,8 +384,9 @@ footer{
 @media (max-width: 950px) {
   .container-p {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     height: 100%;
+    min-height: 0;
   }
 
   #div-info1 {
@@ -335,12 +394,67 @@ footer{
     z-index: 1;
     width: 100%;
     position: relative;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding: 16px 20px;
+    box-sizing: border-box;
+  }
+
+  #div-info1 .section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  #div-info1 .section-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    max-height: 320px;
+    opacity: 1;
+    transition:
+      max-height 0.4s ease,
+      opacity 0.3s ease,
+      margin-top 0.4s ease;
+    margin-top: 0.5em;
+  }
+
+  #div-info1.section-close .section-form {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    pointer-events: none;
+  }
+
+  #div-info1 .section-form .custom-form-1,
+  #div-info1 .section-form .radio-group,
+  #div-info1 .section-form .btn-custom {
+    width: clamp(260px, 90vw, 90vw);
+  }
+
+  #div-info1 .description-p {
+    width: clamp(260px, 90vw, 90vw);
+  }
+
+  .arrow-button {
+    display: flex;
+    flex-shrink: 0;
   }
 
   #div-info2 {
     z-index: 0;
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
+    max-height: none;
     position: relative;
+    overflow-y: auto;
+    box-sizing: border-box;
 
     .content-data-repo {
       width: clamp(20em, 90vw, 90vw);
